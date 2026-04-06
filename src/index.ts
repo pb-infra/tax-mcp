@@ -38,6 +38,10 @@ app.get("/.well-known/openai-domain-verification.txt", (_req: Request, res: Resp
   res.type("text/plain").send(process.env.OPENAI_DOMAIN_TOKEN ?? "REPLACE_WITH_YOUR_TOKEN");
 });
 
+app.get("/.well-known/openai-apps-challenge", (_req: Request, res: Response) => {
+  res.type("text/plain").send(process.env.OPENAI_APPS_CHALLENGE_TOKEN ?? "REPLACE_WITH_YOUR_TOKEN");
+});
+
 app.get("/health", (_req: Request, res: Response) =>
   res.json({ status: "ok", app: APP_NAME, version: "1.0.0" })
 );

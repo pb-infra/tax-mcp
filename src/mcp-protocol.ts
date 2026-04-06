@@ -6,6 +6,11 @@
 export interface MCPTool {
   name: string;
   description: string;
+  annotations?: {
+    readOnlyHint?: boolean;
+    destructiveHint?: boolean;
+    openWorldHint?: boolean;
+  };
   inputSchema: {
     type: "object";
     properties: Record<string, unknown>;
@@ -42,9 +47,16 @@ export interface MCPResponse {
   error?: { code: number; message: string; data?: unknown };
 }
 
+const TOOL_ANNOTATIONS = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  openWorldHint: false,
+} as const;
+
 export const TOOLS: MCPTool[] = [
   {
     name: "calculate_sip",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate SIP (Systematic Investment Plan) or Lumpsum mutual fund returns. Returns total wealth, invested amount, and wealth gained.",
     inputSchema: {
@@ -77,6 +89,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_rd",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate Recurring Deposit (RD) maturity amount. Returns invested amount, estimated returns, and total maturity value.",
     inputSchema: {
@@ -100,6 +113,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_nps",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate NPS (National Pension System) retirement corpus, lumpsum withdrawal, and monthly pension based on age and monthly investment.",
     inputSchema: {
@@ -137,6 +151,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_leave_encashment",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate taxable and exempt leave encashment amount for government and non-government employees.",
     inputSchema: {
@@ -181,6 +196,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_tds",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate TDS (Tax Deducted at Source) on a payment based on nature of payment section (194, 194A, 194C etc.), amount, and PAN availability.",
     inputSchema: {
@@ -210,6 +226,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_salary_breakup",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate net take-home salary from gross salary after deductions like PF, professional tax, TDS, and other deductions.",
     inputSchema: {
@@ -241,6 +258,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_emi",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate EMI (Equated Monthly Instalment) for home loan, car loan, or personal loan. Returns monthly EMI, total interest payable, yearly summary, and full amortization schedule.",
     inputSchema: {
@@ -269,6 +287,7 @@ export const TOOLS: MCPTool[] = [
   },
   {
     name: "calculate_hra_exemption",
+    annotations: TOOL_ANNOTATIONS,
     description:
       "Calculate HRA (House Rent Allowance) exemption under Section 10(13A). Returns exempt HRA and taxable HRA based on salary, rent paid, and city type.",
     inputSchema: {
