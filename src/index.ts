@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "localhost";
 const APP_NAME = "Prismberry Tax Calculator";
 
 // ─── MCP Streamable HTTP endpoint ─────────────────────────────────────────────
@@ -208,7 +209,7 @@ export { app };
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`${APP_NAME} MCP server running on http://localhost:${PORT}`);
-    console.log(`MCP endpoint → http://localhost:${PORT}/mcp`);
+    console.log(`${APP_NAME} MCP server running on http://${HOST}:${PORT}`);
+    console.log(`MCP endpoint → http://${HOST}:${PORT}/mcp`);
   });
 }
