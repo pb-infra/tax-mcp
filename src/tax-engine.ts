@@ -3,6 +3,8 @@
  * Indian tax and investment calculation API client
  */
 
+import "dotenv/config";
+
 const BASE_URL = process.env.TAXSPANNER_BASE_URL;
 const AUTH = process.env.TAXSPANNER_AUTH;
 

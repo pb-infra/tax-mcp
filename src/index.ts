@@ -3,6 +3,7 @@
  * Compatible with ChatGPT Connectors (MCP 2025-03-26)
  */
 
+import "dotenv/config";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { MCPRequest, MCPResponse, MCPInitializeResult, MCPListToolsResult, TOOLS } from "./mcp-protocol";
@@ -12,7 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const HOST = process.env.HOST || "localhost";
 const APP_NAME = "Prismberry Tax Calculator";
 
