@@ -3,8 +3,8 @@
  * Indian tax and investment calculation API client
  */
 
-const BASE_URL = "https://app.taxspanner.com/tsmisc/api";
-const AUTH = "Basic dGF4c3Bhbm5lcjpDYWg4c2FhdGlq";
+const BASE_URL = process.env.TAXSPANNER_BASE_URL;
+const AUTH = process.env.TAXSPANNER_AUTH;
 
 const HEADERS = {
   Accept: "application/json, text/plain, */*",
