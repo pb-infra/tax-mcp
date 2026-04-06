@@ -9,7 +9,7 @@ const AUTH = process.env.TAXSPANNER_AUTH;
 const HEADERS = {
   Accept: "application/json, text/plain, */*",
   "Content-Type": "application/json",
-  Authorization: AUTH,
+  Authorization: AUTH ?? "",
   Origin: "https://taxspanner.com",
   Referer: "https://taxspanner.com/",
   "X-Requested-With": "XMLHttpRequest",
