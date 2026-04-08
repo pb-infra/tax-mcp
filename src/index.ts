@@ -46,6 +46,88 @@ app.get("/health", (_req: Request, res: Response) =>
   res.json({ status: "ok", app: APP_NAME, version: "1.0.0" })
 );
 
+// ─── REST API routes (for GPT Actions / OpenAPI schema) ───────────────────────
+app.post("/api/sip", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.sip(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/rd", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.rd(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/nps", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.nps(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/emi", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.emi(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/hra", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.hra({ ...req.body, name: "User", email: "user@prismberry.com", contact_number: "0000000000" });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/tds", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.tds(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/salary", async (req: Request, res: Response) => {
+  try {
+    const body = {
+      gross_salary: req.body.gross_salary ?? "0",
+      professional_tax: req.body.professional_tax ?? "0",
+      employee_pf_contribution: req.body.employee_pf_contribution ?? "0",
+      csr_contribution: "0",
+      labour_welfare_fund: "0",
+      tax_deducted_at_source: req.body.tax_deducted_at_source ?? "0",
+      other_deductions: req.body.other_deductions ?? "0",
+    };
+    const data = await TaxEngine.salary(body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
+app.post("/api/leave", async (req: Request, res: Response) => {
+  try {
+    const data = await TaxEngine.leaveEncashment(req.body);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Error" });
+  }
+});
+
 // ─── Method dispatcher ─────────────────────────────────────────────────────────
 async function dispatch(method: string, params: Record<string, unknown>): Promise<unknown> {
   switch (method) {
