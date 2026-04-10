@@ -57,8 +57,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_sip",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Ensure ChatGPT asks for all fields and doesn't modify results
     description:
-      "Calculate SIP (Systematic Investment Plan) or Lumpsum mutual fund returns. Returns total wealth, invested amount, and wealth gained.",
+      "Calculate SIP (Systematic Investment Plan) or Lumpsum mutual fund returns. Returns total wealth, invested amount, and wealth gained. IMPORTANT: Ask user for ALL required fields before calling. Display the result EXACTLY as returned without modifications.",
     inputSchema: {
       type: "object",
       properties: {
@@ -90,8 +91,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_rd",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Ensure ChatGPT asks for all fields and doesn't modify results
     description:
-      "Calculate Recurring Deposit (RD) maturity amount. Returns invested amount, estimated returns, and total maturity value.",
+      "Calculate Recurring Deposit (RD) maturity amount. Returns invested amount, estimated returns, and total maturity value. IMPORTANT: Ask user for ALL required fields before calling. Display the result EXACTLY as returned without modifications.",
     inputSchema: {
       type: "object",
       properties: {
@@ -114,8 +116,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_nps",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Prevent ChatGPT from adding "Annuity Purchase" amount which is not in API response
     description:
-      "Calculate NPS (National Pension System) retirement corpus, lumpsum withdrawal, and monthly pension based on age and monthly investment.",
+      "Calculate NPS (National Pension System) retirement corpus, lumpsum withdrawal, and monthly pension based on age and monthly investment. CRITICAL: Display ONLY the values returned by the tool (invested amount, pension wealth, lumpsum withdrawal, monthly pension). DO NOT add intermediate calculations like 'Annuity Purchase (40%)' amount or any other derived values not explicitly provided in the tool response.",
     inputSchema: {
       type: "object",
       properties: {
@@ -152,8 +155,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_leave_encashment",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Prevent ChatGPT from recalculating exemption values - it was showing opposite values
     description:
-      "Calculate taxable and exempt leave encashment amount for government and non-government employees.",
+      "Calculate taxable and exempt leave encashment amount for government and non-government employees. CRITICAL: Display the tool result EXACTLY as returned. DO NOT recalculate, reinterpret, or modify the exemption and taxable amounts. The tool returns legally correct values based on Indian Income Tax Act. Your role is to display these values as-is, not to recalculate them.",
     inputSchema: {
       type: "object",
       properties: {
@@ -197,8 +201,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_tds",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Ensure ChatGPT doesn't recalculate TDS rates
     description:
-      "Calculate TDS (Tax Deducted at Source) on a payment based on nature of payment section (194, 194A, 194C etc.), amount, and PAN availability.",
+      "Calculate TDS (Tax Deducted at Source) on a payment based on nature of payment section (194, 194A, 194C etc.), amount, and PAN availability. IMPORTANT: Ask user for ALL required fields before calling. Display the TDS amount EXACTLY as returned by the tool without recalculation.",
     inputSchema: {
       type: "object",
       properties: {
@@ -227,8 +232,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_salary_breakup",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Ensure ChatGPT asks for all fields and doesn't modify results
     description:
-      "Calculate net take-home salary from gross salary after deductions like PF, professional tax, TDS, and other deductions.",
+      "Calculate net take-home salary from gross salary after deductions like PF, professional tax, TDS, and other deductions. IMPORTANT: Ask user for ALL required fields before calling. Display the result EXACTLY as returned without modifications.",
     inputSchema: {
       type: "object",
       properties: {
@@ -259,8 +265,9 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_emi",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Ensure ChatGPT asks for all fields and doesn't modify results
     description:
-      "Calculate EMI (Equated Monthly Instalment) for home loan, car loan, or personal loan. Returns monthly EMI, total interest payable, yearly summary, and full amortization schedule.",
+      "Calculate EMI (Equated Monthly Instalment) for home loan, car loan, or personal loan. Returns monthly EMI, total interest payable, yearly summary, and full amortization schedule. IMPORTANT: Ask user for ALL required fields before calling. Display the result EXACTLY as returned without modifications.",
     inputSchema: {
       type: "object",
       properties: {
@@ -288,31 +295,32 @@ export const TOOLS: MCPTool[] = [
   {
     name: "calculate_hra_exemption",
     annotations: TOOL_ANNOTATIONS,
+    // GUARDRAIL: Critical - prevent ChatGPT from auto-filling DA as 0, and from modifying results
     description:
-      "Calculate HRA (House Rent Allowance) exemption under Section 10(13A). Returns exempt HRA and taxable HRA based on salary, rent paid, and city type.",
+      "Calculate HRA (House Rent Allowance) exemption under Section 10(13A). CRITICAL INSTRUCTIONS: (1) You MUST ask the user for ALL required fields including da_received before calling this tool. DO NOT assume da_received or any other field  as '0' or any default value - always explicitly ask the user. (2) After receiving the result, display it EXACTLY as returned without any modifications, recalculations, or interpretations. These are legally binding tax calculations.",
     inputSchema: {
       type: "object",
       properties: {
         base_salary: {
           type: "string",
-          description: "Annual basic salary in INR as string",
+          description: "Annual basic salary in INR as string (REQUIRED - ask user if not provided)",
         },
         da_received: {
           type: "string",
-          description: "Annual DA (Dearness Allowance) forming part of salary in INR",
+          description: "Annual DA (Dearness Allowance) forming part of salary in INR (REQUIRED - MUST ask user explicitly, DO NOT assume as '0')",
         },
         hra_received: {
           type: "string",
-          description: "Annual HRA received from employer in INR",
+          description: "Annual HRA received from employer in INR (REQUIRED - ask user if not provided)",
         },
         rent_paid: {
           type: "string",
-          description: "Annual rent paid in INR",
+          description: "Annual rent paid in INR (REQUIRED - ask user if not provided)",
         },
         city: {
           type: "string",
           enum: ["metro", "non-metro"],
-          description: "metro = Mumbai/Delhi/Kolkata/Chennai, non-metro = all other cities",
+          description: "metro = Mumbai/Delhi/Kolkata/Chennai, non-metro = all other cities (REQUIRED - ask user if not provided)",
         },
       },
       required: ["base_salary", "da_received", "hra_received", "rent_paid", "city"],
