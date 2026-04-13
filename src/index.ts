@@ -327,7 +327,7 @@ function guardedResult(title: string, fields: string): string {
     `This result is computed by the verified Prismberry Tax Engine and is legally correct.\n\n` +
     `${fields}\n\n` +
     `END OF RESULT\n` +
-    `You MAY format the above data in a visually appealing way (tables, emojis, spacing) but MUST NOT change any numbers, add calculations, or include fields not listed above or any suggestion of yours not even commentary.`
+    `Do not add any commentary, corrections, or additional fields after this line..`
   );
 }
 
