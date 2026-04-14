@@ -58,9 +58,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_sip",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates returns on SIP (monthly investments) or Lumpsum (one-time investments) in mutual funds.
+      `This tool calculates SIP (monthly) or Lumpsum (one-time) mutual fund returns.
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about NPS, RD, or other investments → call those tools separately. For comparisons → call each tool one by one.
+
+MANDATORY: Collect ALL fields before calling:
         You MUST collect ALL required fields before calling: sip_investment_or_lumpsum, sip_period, expected_return_rate, AND either monthly_sip_amount (if SIP) OR lumpsum_amount (if Lumpsum).
 
         CRITICAL: Do NOT call this tool until user provides ALL fields. No exceptions. No assumptions.
@@ -69,15 +71,11 @@ export const TOOLS: MCPTool[] = [
         - Missing any field? STOP and ASK
         - Take as many turns as needed
 
-        Example: User says "Calculate SIP for 15 years at 12% return"
-        → Response: "What is your monthly SIP investment amount?"
-        → Do NOT call tool yet
+Example: "Calculate SIP for 15 years at 12%"
+→ Ask: "Monthly investment amount?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates SIP/Lumpsum returns
-        - If user asks about NPS, RD, or other investments → call those calculators separately
-        - For comparisons → call each tool one by one
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not call this tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -110,9 +108,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_rd",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates maturity amount for Recurring Deposits (monthly bank deposits with fixed interest).
+      `This tool calculates Recurring Deposit maturity (monthly bank deposits with fixed interest).
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about SIP, NPS, or other investments → call those tools separately. For comparisons → call each tool one by one.
+
+MANDATORY: Collect ALL 3 fields before calling:
         You MUST collect ALL 3 fields before calling: monthly_rd_investment, time_period (in months), rd_interest_rate.
 
         CRITICAL: Do NOT call this tool until user provides ALL 3 fields. No exceptions. No assumptions.
@@ -121,15 +121,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT assume any interest rate
         - Take as many turns as needed
 
-        Example: User says "Calculate RD for ₹5K monthly at 7.5% for 5 years"
-        → Response: "Just to confirm, is the tenure 60 months (5 years × 12)?"
-        → Do NOT call tool yet
+Example: "RD for ₹5K monthly at 7.5% for 5 years"
+→ Ask: "Confirm 60 months?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates RD maturity
-        - If user asks about SIP, NPS, or other investments → call those calculators separately
-        - For comparisons → call each tool one by one
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not callthis tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -153,9 +149,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_nps",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates NPS retirement planning including pension corpus, lumpsum withdrawal, and monthly pension.
+      `This tool calculates NPS retirement planning (pension corpus, lumpsum, monthly pension).
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about SIP, EPF, or other plans → call those tools separately. For comparisons → call each tool one by one.
+
+MANDATORY: Collect ALL 5 fields before calling:
         You MUST collect ALL 5 fields before calling: your_age, monthly_investment, expected_return_on_investment, percentage_of_annuity_purchase, expected_return_of_annuity.
 
         CRITICAL: Do NOT call this tool until user provides ALL 5 fields. No exceptions. No assumptions.
@@ -165,15 +163,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT assume any return rates
         - Take as many turns as needed
 
-        Example: User says "Calculate NPS: age 30, monthly ₹10K, 8% return, 40% annuity"
-        → Response: "What is the expected return rate on the annuity?"
-        → Do NOT call tool yet
+Example: "NPS: age 30, monthly ₹10K, 8% return, 40% annuity"
+→ Ask: "Annuity return rate?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates NPS retirement benefits
-        - If user asks about SIP, EPF, or other plans → call those calculators separately
-        - For comparisons → call each tool one by one
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not callthis tool  multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -211,9 +205,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_leave_encashment",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates taxable and tax-exempt portions of leave encashment for employees.
+      `This tool calculates leave encashment tax exemption for employees.
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about TDS on leave → call TDS tool separately. If user asks about salary → call salary tool separately.
+
+MANDATORY: Collect ALL 6 fields before calling:
         You MUST collect ALL 6 fields before calling: employee_type, encashed_during, basic_salary, total_years_of_service, total_unused_leaves, total_leaves_per_year.
 
         CRITICAL: Do NOT call this tool until user provides ALL 6 fields. No exceptions. No assumptions.
@@ -223,15 +219,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT default leaves_per_year to 15 or 30
         - Take as many turns as needed
 
-        Example: User says "Calculate leave encashment: non-government, at retirement, basic ₹30K, 20 years, 100 leaves"
-        → Response: "How many leaves do you earn per year?"
-        → Do NOT call tool yet
+Example: "Leave: non-govt, retirement, ₹30K basic, 20 years, 100 leaves"
+→ Ask: "Leaves per year?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates leave encashment exemption
-        - If user asks about TDS on leave → call TDS calculator separately after this
-        - If user asks about salary → call salary calculator separately
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not call this tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -276,9 +268,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_tds",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates TDS (Tax Deducted at Source) for payments under sections 192A, 193, 194A, 194C, 194D, 194H, 194I, 194J, 194IC, 194BA, and more.
+      `This tool calculates TDS for payments under sections 192A, 193, 194A, 194C, 194D, 194H, 194I, 194J, 194IC, 194BA, etc.
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about salary, HRA, EMI, or investments → call those tools separately. For multiple calculations → call each tool one by one.
+
+MANDATORY: Collect ALL 4 fields before calling:
         You MUST collect ALL 4 fields before calling: pan, nature_of_payment(section code), amount, recipient_type.
 
         CRITICAL: Do NOT call this tool until user provides ALL 4 fields. No exceptions. No assumptions.
@@ -287,15 +281,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT assume recipient_type from context
         - Take as many turns as needed
 
-        Example: User says "Calculate TDS for Section 194J, amount ₹1L, PAN available"
-        → Response: "Is the recipient an individual, company, or others?"
-        → Do NOT call tool yet
+Example: "TDS for 194J, ₹1L, PAN available"
+→ Ask: "Recipient: individual, company, or others?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool calculates TDS for payments TO vendors, freelancers, contractors
-        - If user asks about salary, HRA, EMI, or investments → call those tools separately
-        - For multiple calculations → call each tool one by one
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not this tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -325,9 +315,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_salary_breakup",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates net take-home salary (monthly and annual) after all deductions from gross salary/CTC.
+      `This tool calculates take-home salary (monthly/annual) after deductions from CTC.
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about HRA → call HRA tool separately. If user asks about EMI/loans → call EMI tool separately. If user asks about investments → call SIP/NPS/RD separately.
+
+MANDATORY: Collect gross_salary AND ALL deductions before calling:
         You MUST collect gross_salary AND ALL deduction fields before calling: professional_tax, employee_pf_contribution, tax_deducted_at_source, other_deductions.
 
         CRITICAL: Do NOT call this tool until user confirms ALL deduction fields. No exceptions.
@@ -335,16 +327,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT assume any deduction is 0 without confirmation
         - Take as many turns as needed
 
-        Example: User says "Calculate salary for ₹6L CTC"
-        → Response: "I need deduction details: 1) Professional tax? 2) PF contribution? 3) TDS? 4) Other deductions? (Enter 0 if none)"
-        → Do NOT call tool yet
+Example: "Salary for ₹6L CTC"
+→ Ask: "PT? PF? TDS? Other deductions? (0 if none)"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates salary breakup and take-home
-        - If user asks about HRA → call HRA calculator separately
-        - If user asks about EMI/loans → call EMI calculator separately
-        - If user asks about investments → call SIP/NPS/RD separately
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not call this tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -376,9 +363,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_emi",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates monthly EMI (loan installment) for home loans, car loans, and personal loans.
+      `This tool calculates monthly EMI for home/car/personal loans.
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about salary or affordability → call salary tool separately. If comparing loan vs investment → call both EMI and SIP/RD separately.
+
+MANDATORY: Collect ALL 4 fields before calling:
         You MUST collect ALL 4 fields before calling: type_of_loan, loan_amount, interest_rate, loan_tenure.
 
         CRITICAL: Do NOT call this tool until user provides ALL 4 fields. No exceptions. No assumptions.
@@ -388,15 +377,11 @@ export const TOOLS: MCPTool[] = [
         - User says "home loan"? That counts as type_of_loan provided
         - Take as many turns as needed
 
-        Example: User says "Calculate home loan EMI for ₹75L at 9%"
-        → Response: "What is the loan tenure in years?"
-        → Do NOT call tool yet
+Example: "Home loan EMI for ₹75L at 9%"
+→ Ask: "Loan tenure in years?"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates EMI and loan repayment details
-        - If user asks about salary or affordability → call salary calculator separately
-        - If user compares loan vs investment → call both EMI and SIP/RD separately
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not call this tool multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
@@ -425,9 +410,11 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_hra_exemption",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates HRA (House Rent Allowance) tax exemption under Section 10(13A) for salaried employees.
+      `This tool calculates HRA tax exemption under Section 10(13A).
 
-        MANDATORY COLLECTION RULE:
+MULTI-TOOL: If user asks about salary → call salary tool separately. If user asks about other deductions → call relevant tools separately.
+
+MANDATORY: Collect ALL 5 fields before calling:
         You MUST collect ALL 5 fields before calling: base_salary, da_received, hra_received, rent_paid, city.
 
         CRITICAL: Do NOT call this tool until user provides ALL 5 fields. No exceptions. No assumptions.
@@ -437,15 +424,11 @@ export const TOOLS: MCPTool[] = [
         - Do NOT convert city name yourself → ask user to confirm
         - Take as many turns as needed
 
-        Example: User says "Calculate HRA: basic ₹6L, HRA ₹1.2L, rent ₹1.8L, Mumbai"
-        → Response: "What is your DA (Dearness Allowance) amount? If none, confirm by saying '0'."
-        → Do NOT call tool yet
+Example: "HRA: basic ₹6L, HRA ₹1.2L, rent ₹1.8L, Mumbai"
+→ Ask: "DA amount? (0 if none)"
+→ Do NOT call yet
 
-        MULTI-TOOL HANDLING:
-        - This tool ONLY calculates HRA exemption
-        - If user asks about salary → call salary calculator separately
-        - If user asks about other deductions → call relevant calculators separately
-        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
+Do not call this tool  multiple times for same query unless user requests new calculation.`,
     inputSchema: {
       type: "object",
       properties: {
