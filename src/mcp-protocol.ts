@@ -58,22 +58,26 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_sip",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate SIP (Systematic Investment Plan) or Lumpsum mutual fund returns.
+      `This tool calculates returns on SIP (monthly investments) or Lumpsum (one-time investments) in mutual funds.
 
-      RULE 1 — COLLECT ALL FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL required values explicitly from the user before calling this tool: sip_investment_or_lumpsum, sip_period, expected_return_rate, AND either monthly_sip_amount (if SIP) or lumpsum_amount (if Lumpsum).
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL required fields. No exceptions. No assumptions.
-      - If user says "SIP", you need monthly_sip_amount
-      - If user says "Lumpsum", you need lumpsum_amount
-      - If user provides type and period but not amount, STOP and ask for the amount
-      - Take as many chat turns as needed to collect all required fields
-      
-      Example: User says "Calculate SIP for 15 years at 12% return"
-      → You MUST respond: "I need one more detail. What is your monthly SIP investment amount?"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't add extra fields like 'CAGR' or 'Return %' (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL required fields before calling: sip_investment_or_lumpsum, sip_period, expected_return_rate, AND either monthly_sip_amount (if SIP) OR lumpsum_amount (if Lumpsum).
+
+        CRITICAL: Do NOT call this tool until user provides ALL fields. No exceptions. No assumptions.
+        - If user says "SIP" → need monthly_sip_amount
+        - If user says "Lumpsum" → need lumpsum_amount  
+        - Missing any field? STOP and ASK
+        - Take as many turns as needed
+
+        Example: User says "Calculate SIP for 15 years at 12% return"
+        → Response: "What is your monthly SIP investment amount?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates SIP/Lumpsum returns
+        - If user asks about NPS, RD, or other investments → call those calculators separately
+        - For comparisons → call each tool one by one
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -106,22 +110,26 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_rd",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate Recurring Deposit (RD) maturity amount.
+      `This tool calculates maturity amount for Recurring Deposits (monthly bank deposits with fixed interest).
 
-      RULE 1 — COLLECT ALL 3 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 3 values explicitly from the user before calling this tool: monthly_rd_investment, time_period (in months), rd_interest_rate.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 3 fields. No exceptions. No assumptions.
-      - If user provides 2 out of 3, STOP and ask for the missing one
-      - If user says "5 years", ask them to confirm "Is that 60 months?" — do NOT convert yourself
-      - Do NOT assume any standard interest rate
-      - Take as many chat turns as needed to collect all 3 fields
-      
-      Example: User says "Calculate RD for ₹5K monthly at 7.5% for 5 years"
-      → You MUST respond: "Just to confirm, is the tenure 60 months (5 years × 12)?"
-      → Wait for confirmation before calling the tool
-      
-      RULES 2 & 3 — Display response as-is, don't add 'Interest Earned' field (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 3 fields before calling: monthly_rd_investment, time_period (in months), rd_interest_rate.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 3 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - User says "5 years"? Ask: "Is that 60 months?" (do NOT convert yourself)
+        - Do NOT assume any interest rate
+        - Take as many turns as needed
+
+        Example: User says "Calculate RD for ₹5K monthly at 7.5% for 5 years"
+        → Response: "Just to confirm, is the tenure 60 months (5 years × 12)?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates RD maturity
+        - If user asks about SIP, NPS, or other investments → call those calculators separately
+        - For comparisons → call each tool one by one
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -145,23 +153,27 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_nps",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate NPS (National Pension System) retirement corpus, lumpsum withdrawal, and monthly pension.
+      `This tool calculates NPS retirement planning including pension corpus, lumpsum withdrawal, and monthly pension.
 
-      RULE 1 — COLLECT ALL 5 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 5 values explicitly from the user before calling this tool: your_age, monthly_investment, expected_return_on_investment, percentage_of_annuity_purchase, expected_return_of_annuity.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 5 fields. No exceptions. No assumptions.
-      - If user provides 4 out of 5, STOP and ask for the missing one
-      - Do NOT assume retirement age as 60 and calculate age from that
-      - Do NOT default percentage_of_annuity_purchase to 40%
-      - Do NOT assume any return rates
-      - Take as many chat turns as needed to collect all 5 fields
-      
-      Example: User says "Calculate NPS: age 30, monthly ₹10K, 8% return, 40% annuity"
-      → You MUST respond: "I need one more detail. What is the expected return rate on the annuity?"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't add 'Annuity Purchase Amount' field (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 5 fields before calling: your_age, monthly_investment, expected_return_on_investment, percentage_of_annuity_purchase, expected_return_of_annuity.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 5 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - Do NOT assume retirement age as 60
+        - Do NOT default annuity percentage to 40%
+        - Do NOT assume any return rates
+        - Take as many turns as needed
+
+        Example: User says "Calculate NPS: age 30, monthly ₹10K, 8% return, 40% annuity"
+        → Response: "What is the expected return rate on the annuity?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates NPS retirement benefits
+        - If user asks about SIP, EPF, or other plans → call those calculators separately
+        - For comparisons → call each tool one by one
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -199,23 +211,27 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_leave_encashment",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate taxable and exempt leave encashment amount.
+      `This tool calculates taxable and tax-exempt portions of leave encashment for employees.
 
-      RULE 1 — COLLECT ALL 6 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 6 values explicitly from the user before calling this tool: employee_type, encashed_during, basic_salary, total_years_of_service, total_unused_leaves, total_leaves_per_year.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 6 fields. No exceptions. No assumptions.
-      - If user provides 5 out of 6, STOP and ask for the missing one
-      - Do NOT assume employee_type as 'non_government'
-      - Do NOT assume encashed_during as 'at_retirement'
-      - Do NOT default total_leaves_per_year to any standard value (like 15 or 30)
-      - Take as many chat turns as needed to collect all 6 fields
-      
-      Example: User says "Calculate leave encashment: non-government, at retirement, basic ₹30K, 20 years service, 100 leaves"
-      → You MUST respond: "I need one more detail. How many leaves do you earn per year?"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't recalculate exemption/taxable amounts (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 6 fields before calling: employee_type, encashed_during, basic_salary, total_years_of_service, total_unused_leaves, total_leaves_per_year.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 6 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - Do NOT assume employee_type as 'non_government'
+        - Do NOT assume encashed_during as 'at_retirement'
+        - Do NOT default leaves_per_year to 15 or 30
+        - Take as many turns as needed
+
+        Example: User says "Calculate leave encashment: non-government, at retirement, basic ₹30K, 20 years, 100 leaves"
+        → Response: "How many leaves do you earn per year?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates leave encashment exemption
+        - If user asks about TDS on leave → call TDS calculator separately after this
+        - If user asks about salary → call salary calculator separately
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -260,22 +276,26 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_tds",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate TDS (Tax Deducted at Source) on a payment.
+      `This tool calculates TDS (Tax Deducted at Source) for payments under sections 192A, 193, 194A, 194C, 194D, 194H, 194I, 194J, 194IC, 194BA, and more.
 
-      RULE 1 — COLLECT ALL 4 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 4 values explicitly from the user before calling this tool: pan, nature_of_payment, amount, recipient_type.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 4 fields. No exceptions. No assumptions.
-      - If user provides 3 out of 4, STOP and ask for the missing one
-      - Do NOT assume PAN status
-      - Do NOT assume recipient_type from context
-      - Take as many chat turns as needed to collect all 4 fields
-      
-      Example: User says "Calculate TDS for Section 194J, amount ₹1L, PAN available"
-      → You MUST respond: "I need one more detail. Is the recipient an individual, company, or others?"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't recalculate TDS rates (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 4 fields before calling: pan, nature_of_payment(section code), amount, recipient_type.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 4 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - Do NOT assume PAN status
+        - Do NOT assume recipient_type from context
+        - Take as many turns as needed
+
+        Example: User says "Calculate TDS for Section 194J, amount ₹1L, PAN available"
+        → Response: "Is the recipient an individual, company, or others?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool calculates TDS for payments TO vendors, freelancers, contractors
+        - If user asks about salary, HRA, EMI, or investments → call those tools separately
+        - For multiple calculations → call each tool one by one
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -305,21 +325,26 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_salary_breakup",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate net take-home salary from gross salary after deductions.
+      `This tool calculates net take-home salary (monthly and annual) after all deductions from gross salary/CTC.
 
-      RULE 1 — COLLECT ALL DEDUCTION FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have gross_salary and ALL deduction fields from the user before calling this tool: professional_tax, employee_pf_contribution, tax_deducted_at_source, other_deductions.
-      
-      CRITICAL: Do NOT call this tool until the user has confirmed ALL deduction fields. No exceptions.
-      - If user only provides gross_salary, STOP and ask: "Please provide your professional tax, PF contribution, TDS, and any other deductions. If any of these is 0, please confirm that."
-      - Do NOT assume any deduction is 0 without user confirmation
-      - Take as many chat turns as needed to collect all fields
-      
-      Example: User says "Calculate salary for ₹6L CTC"
-      → You MUST respond: "I need your deduction details. What are your: 1) Professional tax, 2) PF contribution, 3) TDS, 4) Other deductions? (Enter 0 for any that don't apply)"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't recalculate monthly/annual (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect gross_salary AND ALL deduction fields before calling: professional_tax, employee_pf_contribution, tax_deducted_at_source, other_deductions.
+
+        CRITICAL: Do NOT call this tool until user confirms ALL deduction fields. No exceptions.
+        - User only provides gross_salary? STOP and ASK: "Provide: 1) Professional tax, 2) PF contribution, 3) TDS, 4) Other deductions. Enter 0 if none."
+        - Do NOT assume any deduction is 0 without confirmation
+        - Take as many turns as needed
+
+        Example: User says "Calculate salary for ₹6L CTC"
+        → Response: "I need deduction details: 1) Professional tax? 2) PF contribution? 3) TDS? 4) Other deductions? (Enter 0 if none)"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates salary breakup and take-home
+        - If user asks about HRA → call HRA calculator separately
+        - If user asks about EMI/loans → call EMI calculator separately
+        - If user asks about investments → call SIP/NPS/RD separately
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -351,23 +376,27 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_emi",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate EMI (Equated Monthly Instalment) for loans.
+      `This tool calculates monthly EMI (loan installment) for home loans, car loans, and personal loans.
 
-      RULE 1 — COLLECT ALL 4 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 4 values explicitly from the user before calling this tool: type_of_loan, loan_amount, interest_rate, loan_tenure.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 4 fields. No exceptions. No assumptions.
-      - If user provides 3 out of 4, STOP and ask for the missing one
-      - Do NOT assume a standard interest rate (like 8.5% or 9%)
-      - Do NOT default tenure to any value
-      - If user says "home loan", that counts as type_of_loan being provided
-      - Take as many chat turns as needed to collect all 4 fields
-      
-      Example: User says "Calculate home loan EMI for ₹75L at 9%"
-      → You MUST respond: "I need one more detail. What is the loan tenure in years?"
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't recalculate EMI (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 4 fields before calling: type_of_loan, loan_amount, interest_rate, loan_tenure.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 4 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - Do NOT assume interest rate (like 8.5% or 9%)
+        - Do NOT default tenure to any value
+        - User says "home loan"? That counts as type_of_loan provided
+        - Take as many turns as needed
+
+        Example: User says "Calculate home loan EMI for ₹75L at 9%"
+        → Response: "What is the loan tenure in years?"
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates EMI and loan repayment details
+        - If user asks about salary or affordability → call salary calculator separately
+        - If user compares loan vs investment → call both EMI and SIP/RD separately
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
@@ -396,23 +425,27 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_hra_exemption",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `Calculate HRA (House Rent Allowance) exemption under Section 10(13A).
+      `This tool calculates HRA (House Rent Allowance) tax exemption under Section 10(13A) for salaried employees.
 
-      RULE 1 — COLLECT ALL 5 FIELDS BEFORE CALLING (MANDATORY):
-      You MUST have ALL 5 values explicitly from the user before calling this tool: base_salary, da_received, hra_received, rent_paid, city.
-      
-      CRITICAL: Do NOT call this tool until the user has provided ALL 5 fields. No exceptions. No assumptions.
-      - If user provides 4 out of 5, STOP and ask for the missing one
-      - Do NOT assume da_received as '0' — explicitly ask "What is your DA (Dearness Allowance)?"
-      - Do NOT assume city from context — explicitly ask "Is your city metro or non-metro?"
-      - Do NOT convert user's city name to metro/non-metro yourself — ask them to confirm
-      - Take as many chat turns as needed to collect all 5 fields
-      
-      Example: User says "Calculate HRA: basic ₹6L, HRA ₹1.2L, rent ₹1.8L, Mumbai"
-      → You MUST respond: "I need one more detail before calculating. What is your DA (Dearness Allowance) amount? If you don't receive DA, please confirm by saying '0'."
-      → Do NOT call the tool yet
-      
-      RULES 2 & 3 — Display response as-is, don't recalculate (detailed instructions in tool response).`,
+        MANDATORY COLLECTION RULE:
+        You MUST collect ALL 5 fields before calling: base_salary, da_received, hra_received, rent_paid, city.
+
+        CRITICAL: Do NOT call this tool until user provides ALL 5 fields. No exceptions. No assumptions.
+        - Missing 1 field? STOP and ASK
+        - Do NOT assume da_received as '0' → explicitly ask "What is your DA (Dearness Allowance)?"
+        - Do NOT assume city → explicitly ask "Is your city metro or non-metro?"
+        - Do NOT convert city name yourself → ask user to confirm
+        - Take as many turns as needed
+
+        Example: User says "Calculate HRA: basic ₹6L, HRA ₹1.2L, rent ₹1.8L, Mumbai"
+        → Response: "What is your DA (Dearness Allowance) amount? If none, confirm by saying '0'."
+        → Do NOT call tool yet
+
+        MULTI-TOOL HANDLING:
+        - This tool ONLY calculates HRA exemption
+        - If user asks about salary → call salary calculator separately
+        - If user asks about other deductions → call relevant calculators separately
+        - Do not call this tool multiple times for same query unless user requests new calculation with different inputs`,
     inputSchema: {
       type: "object",
       properties: {
