@@ -58,10 +58,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_sip",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates returns on SIP (monthly investments) or Lumpsum (one-time investments) in mutual funds.
-      NOTE: This tool ONLY calculates investment returns for SIP or Lumpsum.
-        - If the user also asks about NPS, RD, or other investments, you MUST call those calculators separately.
-        - If the user asks to compare multiple investment types, call each relevant tool one by one.
+      `Calculate SIP (Systematic Investment Plan) or Lumpsum mutual fund returns.
 
       RULE 1 — COLLECT ALL FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL required values explicitly from the user before calling this tool: sip_investment_or_lumpsum, sip_period, expected_return_rate, AND either monthly_sip_amount (if SIP) or lumpsum_amount (if Lumpsum).
@@ -74,7 +71,9 @@ export const TOOLS: MCPTool[] = [
       
       Example: User says "Calculate SIP for 15 years at 12% return"
       → You MUST respond: "I need one more detail. What is your monthly SIP investment amount?"
-      → Do NOT call the tool yet`,
+      → Do NOT call the tool yet
+      
+      RULES 2 & 3 — Display response as-is, don't add extra fields like 'CAGR' or 'Return %' (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -107,11 +106,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_rd",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates maturity amount for Recurring Deposits (monthly bank deposits with fixed interest).
-      
-      NOTE: This tool ONLY calculates RD maturity.
-      - If the user also asks about SIP, NPS, or other investments, you MUST call those calculators separately.
-      - If the user asks to compare RD with other options, call each relevant tool one by one.
+      `Calculate Recurring Deposit (RD) maturity amount.
 
       RULE 1 — COLLECT ALL 3 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 3 values explicitly from the user before calling this tool: monthly_rd_investment, time_period (in months), rd_interest_rate.
@@ -124,7 +119,9 @@ export const TOOLS: MCPTool[] = [
       
       Example: User says "Calculate RD for ₹5K monthly at 7.5% for 5 years"
       → You MUST respond: "Just to confirm, is the tenure 60 months (5 years × 12)?"
-      → Wait for confirmation before calling the tool`,
+      → Wait for confirmation before calling the tool
+      
+      RULES 2 & 3 — Display response as-is, don't add 'Interest Earned' field (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -148,11 +145,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_nps",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates NPS retirement planning including pension corpus, lumpsum withdrawal, and monthly pension.
-
-      NOTE: This tool ONLY calculates NPS retirement benefits.
-      - If the user also asks about SIP, EPF, or other retirement plans, you MUST call those calculators separately.
-      - If the user asks to compare retirement options, call each relevant tool one by one.
+      `Calculate NPS (National Pension System) retirement corpus, lumpsum withdrawal, and monthly pension.
 
       RULE 1 — COLLECT ALL 5 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 5 values explicitly from the user before calling this tool: your_age, monthly_investment, expected_return_on_investment, percentage_of_annuity_purchase, expected_return_of_annuity.
@@ -166,7 +159,9 @@ export const TOOLS: MCPTool[] = [
       
       Example: User says "Calculate NPS: age 30, monthly ₹10K, 8% return, 40% annuity"
       → You MUST respond: "I need one more detail. What is the expected return rate on the annuity?"
-      → Do NOT call the tool yet`,
+      → Do NOT call the tool yet
+      
+      RULES 2 & 3 — Display response as-is, don't add 'Annuity Purchase Amount' field (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -204,11 +199,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_leave_encashment",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates taxable and tax-exempt portions of leave encashment for employees.
-
-      NOTE: This tool ONLY calculates leave encashment exemption.
-      - If the user also asks about TDS on leave encashment, you MUST call the TDS calculator separately after this.
-      - If the user asks about salary or other tax calculations, call those tools separately.
+      `Calculate taxable and exempt leave encashment amount.
 
       RULE 1 — COLLECT ALL 6 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 6 values explicitly from the user before calling this tool: employee_type, encashed_during, basic_salary, total_years_of_service, total_unused_leaves, total_leaves_per_year.
@@ -222,7 +213,9 @@ export const TOOLS: MCPTool[] = [
       
       Example: User says "Calculate leave encashment: non-government, at retirement, basic ₹30K, 20 years service, 100 leaves"
       → You MUST respond: "I need one more detail. How many leaves do you earn per year?"
-      → Do NOT call the tool yet.`,
+      → Do NOT call the tool yet
+      
+      RULES 2 & 3 — Display response as-is, don't recalculate exemption/taxable amounts (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -267,12 +260,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_tds",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates TDS (Tax Deducted at Source) for payments made under various sections including 194A (interest), 194C (contractor), 194J (professional fees), 194I (rent), and others.
-
-      NOTE: This tool calculates TDS for payments TO vendors, freelancers, contractors, etc.
-      - This tool supports sections: 192A, 193, 194IC, Subsection-2 of 194BA,  194A, 194C, 194D, 194H, 194I, 194J, and more.
-      - - If the user asks about salary, HRA, EMI, or other calculations, call those tools separately.
-.
+      `Calculate TDS (Tax Deducted at Source) on a payment, salary and more under various sections .
 
       RULE 1 — COLLECT ALL 4 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 4 values explicitly from the user before calling this tool: pan, section/nature_of_payment, amount, recipient_type.
@@ -286,7 +274,8 @@ export const TOOLS: MCPTool[] = [
       Example: User says "Calculate TDS for Section 194J, amount ₹1L, PAN available"
       → You MUST respond: "I need one more detail. Is the recipient an individual, company, or others?"
       → Do NOT call the tool yet
-      `,
+      
+      RULES 2 & 3 — Display response as-is, don't recalculate TDS rates (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -316,11 +305,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_salary_breakup",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates net take-home salary (monthly and annual) after all deductions from gross salary/CTC.
-      NOTE: This tool ONLY calculates salary breakup and take-home pay.
-      - If the user also asks about HRA exemption, you MUST call the HRA calculator separately.
-      - If the user asks about loan affordability or EMI, call the EMI calculator separately.
-      - If the user asks about investments, call SIP/NPS/RD calculators separately.
+      `Calculate net take-home salary from gross salary after deductions.
 
       RULE 1 — COLLECT ALL DEDUCTION FIELDS BEFORE CALLING (MANDATORY):
       You MUST have gross_salary and ALL deduction fields from the user before calling this tool: professional_tax, employee_pf_contribution, tax_deducted_at_source, other_deductions.
@@ -333,7 +318,8 @@ export const TOOLS: MCPTool[] = [
       Example: User says "Calculate salary for ₹6L CTC"
       → You MUST respond: "I need your deduction details. What are your: 1) Professional tax, 2) PF contribution, 3) TDS, 4) Other deductions? (Enter 0 for any that don't apply)"
       → Do NOT call the tool yet
-      `,
+      
+      RULES 2 & 3 — Display response as-is, don't recalculate monthly/annual (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -365,10 +351,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_emi",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates monthly EMI (loan installment) for home loans, car loans, and personal loans.
-      NOTE: This tool ONLY calculates EMI and loan repayment details.
-      - If the user also asks about salary or affordability, you MUST call the salary calculator separately.
-      - If the user asks to compare loan vs investment, call both EMI and SIP/RD calculators separately.
+      `Calculate EMI (Equated Monthly Instalment) for loans.
 
       RULE 1 — COLLECT ALL 4 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 4 values explicitly from the user before calling this tool: type_of_loan, loan_amount, interest_rate, loan_tenure.
@@ -383,7 +366,8 @@ export const TOOLS: MCPTool[] = [
       Example: User says "Calculate home loan EMI for ₹75L at 9%"
       → You MUST respond: "I need one more detail. What is the loan tenure in years?"
       → Do NOT call the tool yet
-      `,
+      
+      RULES 2 & 3 — Display response as-is, don't recalculate EMI (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
@@ -412,10 +396,7 @@ export const TOOLS: MCPTool[] = [
     name: "calculate_hra_exemption",
     annotations: TOOL_ANNOTATIONS,
     description:
-      `This tool calculates HRA (House Rent Allowance) tax exemption under Section 10(13A).
-      NOTE: This tool ONLY calculates HRA exemption.
-      - If the user also asks about salary calculation, you MUST call the salary calculator separately.
-      - If the user asks about other tax deductions, call the relevant calculators separately.
+      `Calculate HRA (House Rent Allowance) exemption under Section 10(13A).
 
       RULE 1 — COLLECT ALL 5 FIELDS BEFORE CALLING (MANDATORY):
       You MUST have ALL 5 values explicitly from the user before calling this tool: base_salary, da_received, hra_received, rent_paid, city.
@@ -430,7 +411,8 @@ export const TOOLS: MCPTool[] = [
       Example: User says "Calculate HRA: basic ₹6L, HRA ₹1.2L, rent ₹1.8L, Mumbai"
       → You MUST respond: "I need one more detail before calculating. What is your DA (Dearness Allowance) amount? If you don't receive DA, please confirm by saying '0'."
       → Do NOT call the tool yet
-      `,
+      
+      RULES 2 & 3 — Display response as-is, don't recalculate (detailed instructions in tool response).`,
     inputSchema: {
       type: "object",
       properties: {
